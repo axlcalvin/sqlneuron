@@ -1,0 +1,25 @@
+/*HRD DATA*/
+SELECT firstName, lastName, email, jobTitle FROM `employees`;
+
+/*QUERYING DATA*/
+SELECT firstName, lastName, email, jobTitle FROM `employees`;
+
+SELECT customerNumber, customerName, country, phone, creditLimit FROM `customers`;
+
+/*SORTING DATA*/
+SELECT customerNumber, customerName, country, phone, creditLimit FROM `customers` ORDER BY creditLimit DESC;
+
+SELECT * FROM `payments` ORDER BY paymentDate DESC;
+
+/*FILTERING DATA*/
+SELECT productCode, productName, productLine, productVendor, quantityInStock, buyPrice FROM `products` WHERE quantityInStock < 100 ORDER BY quantityInStock ASC;
+
+SELECT orderNumber, orderDate, requiredDate, shippedDate, status, comments FROM `orders` WHERE `orderDate` BETWEEN '2004-08-01' AND '2004-08-31';
+
+/*JOIN*/
+SELECT employeeNumber, firstName, lastName, email, jobTitle, offices.city, offices.country FROM `employees` INNER JOIN offices ON offices.officeCode = employees.officeCode ORDER BY employeeNumber;
+
+SELECT customers.customerName, customers.country, customers.phone, checkNumber, paymentDate, amount FROM `payments` INNER JOIN customers ON customers.customerNumber = payments.customerNumber ORDER BY paymentDate DESC;
+
+/*AGREGATE*/
+SELECT employees.firstName, employees.lastName, AVG(creditLimit) FROM customers INNER JOIN employees ON employees.employeeNumber = customers.salesRepEmployeeNumber GROUP BY salesRepEmployeeNumber;
