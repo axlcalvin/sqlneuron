@@ -1,0 +1,69 @@
+
+/*TRANSACTION SQL INSERT 5 RECORD AND COMMITED*/
+START TRANSACTION;
+
+INSERT INTO offices(officeCode, city, phone, addressLine1, addressLine2, state, country, postalCode, territory)
+VALUES
+(8, 'Osaka', '+81 33 224 6600', '5-2 Osaka', '', 'Osaka', 'Japan', '102-8579', 'Japan'),
+(9, 'Rio', '+99 33 265 6320', '11-1 Rio', '', 'Rio', 'Brazil', '893-0329', 'Brazil'),
+(10, 'Jakarta', '+62 22 72115261', 'Jakarta Pusat', '', 'Jakarta', 'Indonesia', '52019', 'Indonesia'),
+(11, 'Bandung', '+62 8930 2813', 'Soekarno Hatta', '', 'Bandung', 'Indonesia', '40192', 'Indonesia'),
+(12, 'Phuket', '+72 33 124 2380', 'Phuket', '', 'Phuket', 'Thailand', '8723-8', 'Thailand');
+      
+COMMIT;
+/*END TRANSACTION*/ 
+
+/*INSERT/UPDATE/DELETE DI 1 SESI DAN READ TABLE DI SESI YG BERBEDA*/
+start transaction;
+
+INSERT into payments (customerNumber, checkNumber, paymentDate, amount) values(112,'PU547382','2009-07-05',15000);
+
+select * from payments;
+
+commit;
+/*END*/
+
+/*ROLLBACK TO SAVEPOINT*/
+start transaction;
+
+INSERT into payments (customerNumber, checkNumber, paymentDate, amount) values(103,'ML545285','2011-06-05',30000);
+savepoint mysavepoint;
+
+INSERT into payments (customerNumber, checkNumber, paymentDate, amount) values(103,'JU538237','2011-07-05',20000);
+ROLLBACK to mysavepoint;
+
+select * from payments;
+
+commit;
+/*END ROLLBACK*/
+
+
+
+/*SUBQUERY*/
+
+/*SELECT STATEMENT*/
+SELECT employeeNumber, firstName, lastName FROM employees WHERE officeCode IN (SELECT officeCode FROM offices WHERE country = 'USA') ORDER BY employeeNumber ASC;
+
+/*INSERT STATEMENT*/
+INSERT INTO payments (customerNumber, checkNumber, paymentDate, amount)
+  SELECT
+    customerNumber as customerNumber,
+    'OQ102334' AS checkNumber,
+    '2012-01-02' AS paymentDate,
+    10000 AS amount
+  FROM customers 
+  WHERE customers.customerNumber = 121;
+  
+/*UPDATE STATEMENT*/
+UPDATE payments set amount = amount+10000 WHERE customerNumber IN (SELECT customerNumber FROM customers WHERE creditLimit >= 50000 );
+
+/*DELETE STATEMENT*/
+DELETE FROM payments WHERE customerNumber IN (SELECT customerNumber FROM customers WHERE creditLimit >= 50000 );
+
+ /*Filter dari column dengan agregasi nilai paling besar*/
+ SELECT customerNumber, checkNumber, paymentDate, amount FROM payments WHERE customerNumber IN (
+    SELECT customerNumber FROM customers GROUP BY customerNumber HAVING MAX(creditLimit)>10000
+) ORDER BY customerNumber ASC;
+
+/*END SUBQUERY*/
+
